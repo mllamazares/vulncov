@@ -25,7 +25,7 @@ Check out the [Demo section](#demo) for an intuitive example.
 ## Features
 - Shows which test cases reach each SAST finding, making it easier to analyze and test the scenario. 🎯
 - Calculates the percentage of coverage between the vulnerability and the executed lines. Ideally, all lines flagged by SAST should be executed. 📏
-- Generates JSON output with key Semgrep fields, including the `fingerprint`, making it easier to compare and correlate findings. 🔗
+- Generates JSON output with the most relevant Semgrep fields, including the `fingerprint`, making it easier to compare with the original results if needed. 🔗
 - Allows excluding Semgrep rules using regex. 🚫
 - Lets you run Semgrep and coverage scans or use existing results if you’ve already run the tools. 🃏
 - Currently supports Python (more languages [coming soon](#TODO)!). 🐍
@@ -86,14 +86,14 @@ Scenario 2 - To use already existing Semgrep and Coverage outputs:
 ## Sample Workflow
 
 There are two main scenarios to use the script:
-1. **Scenario 1**: Run coverage and Semgrep before.
+1. **Scenario 1**: Run Coverage and Semgrep for me.
 2. **Scenario 2**: Use already existing Semgrep and Coverage outputs.
 
 Each scenario requires different inputs, as shown in the help section.
 
-### Scenario 1: Run coverage and Semgrep before
+### Scenario 1: Run Coverage and Semgrep for me
 
-`vulncov` needs Semgrep and coverage JSON files as input, but if you want `vulncov` to handle everything, just specify:
+`vulncov` needs Semgrep and coverage JSON files as input, but if you want `vulncov` to handle everything, just specify the following parameters:
 
 ```
   -p PYTEST_FOLDER, --pytest_folder PYTEST_FOLDER
@@ -105,6 +105,13 @@ Each scenario requires different inputs, as shown in the help section.
 Example command:
 ```shell
 vulncov -p demo/tests -t demo/
+```
+
+#### Installing target app dependencies for Coverage
+
+To run `vulncov` in this mode, be aware that in addition to the initial dependencies, the target app might require additional ones, such as Flask. You can install these by running the following command in the virtual environment:
+```shell
+pip install -r demo/requirements.txt
 ```
 
 ### Scenario 2: Use already existing Semgrep and Coverage outputs
@@ -122,7 +129,7 @@ Example command:
 vulncov -s semgrep_vulns.json -c coverage.json 
 ```
 
-#### Generating valid coverage scans
+#### Generating valid Coverage scans
 
 Note that you need to run coverage with the [dynamic context](https://coverage.readthedocs.io/en/latest/contexts.html#dynamic-contexts) enabled. To do this, create a `coverage.cfg` file with the following content:
 
@@ -190,13 +197,12 @@ def ping():
 
 As you can see, the `ping` function has its route commented out, so it’s inaccessible externally. It’s also referenced in the login function, but note that it's called only if an impossible condition (`if 1==2`) is met, making it unreachable.
 
-
-
 Now, let’s see how the process looks when running a [standalone SAST](#using-a-standalone-sast) versus [using `vulncov`](#using-vulncov).
 
 #### Demo App Setup
 
-After completing the steps in the [Installation](#installation) section, install the additional dependencies for the demo app by running this command in the virtual environment:
+After completing the steps in the [Installation](#installation) section, install the additional dependencies for the demo app by running this command in the virtual environment, as pointed out in [Installing target app dependencies](#installing-target-app-dependencies):
+
 ```shell
 pip install -r demo/requirements.txt
 ```
@@ -225,7 +231,7 @@ cat /tmp/semgrep_results.json | jq | grep check_id
 
 The main issue here is that it's flagging functions like `dangerous-system-call` that are dead code, as explained in the [Demo section](#demo).
 
-### Using `vulncov`
+### Using `vulncov` 🪄
 
 Simply run this command:
 
@@ -344,7 +350,6 @@ Additionally, the output includes information on which test cases can trigger ea
 
 ## Output JSON structure
 
-
 Below is a detailed breakdown of the `vulncov` JSON structure:
 
 ### `summary`
@@ -378,7 +383,7 @@ The `matched_results` array contains detailed information about each detected vu
 
 ## TODO
 - [ ] Support other languages, not just Python. 🌍
+- [ ] Simplify the installation process (probably via docker). 🐋
 - [ ] Clean and refactor code. 🧹
-- [ ] Simplify the installation process.
 
 Contributions are welcome! Feel free to submit a PR. 🙌
