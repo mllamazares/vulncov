@@ -379,7 +379,7 @@ The `matched_results` array contains detailed information about each detected vu
   - **name**: The name of the test case.
   - **executed_lines**: An array of line numbers that were executed during the test case.
   - **matched_lines**: An array of line numbers that both correspond to the vulnerability and were executed during the test case.
-  - **coverage_match_percentage**: The percentage of vulnerable lines that were covered by the test case, indicating how thoroughly the vulnerability is tested.
+  - **coverage_match_percentage**: The percentage of vulnerable lines that were covered by the test case.
 
 ## TODO
 - [ ] Support other languages, not just Python. 🌍
