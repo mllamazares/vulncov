@@ -13,7 +13,7 @@
 ## Rationale
 When analyzing SAST tool output, some findings might not be reachable from external sources, meaning they pose less risk. Conversely, starting with data flow from sources might not catch potential vulnerabilities. 
 
-`vulncov` solves this by correlating SAST findings with code coverage data from unit tests. This helps prioritize reachable vulnerabilities and provides insignts on how to reach the affected code, as you can identify the test cases associated with specific findings.
+`vulncov` solves this by correlating SAST findings with code coverage data from unit tests. This helps prioritize reachable vulnerabilities and provides insights on how to reach the affected code, as you can identify the test cases associated with specific findings.
 
 Check out the [Demo section](#demo) for an intuitive example.
 
