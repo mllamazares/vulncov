@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 import subprocess
 import uuid 
-
+import shutil
 
 class VulnCov:
     def __init__(self, semgrep_filepath, coverage_filepath):
@@ -201,23 +201,32 @@ def run_coverage_and_semgrep(pytest_folder, semgrep_output_file, coverage_output
         tuple: Paths to the generated Semgrep and coverage JSON files.
     """
 
+    for utility in ['semgrep', 'coverage']:
+        if not shutil.which(utility):
+            raise EnvironmentError(f"Error: {utility} is not installed. Please install it using `pip install {utility}`.")
+
     # Run coverage
     logging.info("Executing coverage...")
     config_path = os.path.join(os.path.dirname(__file__), 'coverage.cfg')
+    
     subprocess.run(['coverage', 'run', '--rcfile', config_path, '-m', 'pytest', pytest_folder], check=True, stdout=subprocess.DEVNULL)
     subprocess.run([
         'coverage', 'json', '-o', coverage_output_file, 
         f'--omit={pytest_folder}*', '--show-contexts'
     ], check=True, stdout=subprocess.DEVNULL)
+
     logging.info(f"Coverage report generated at {coverage_output_file}.")
 
     # Run Semgrep
     logging.info(f"Running semgrep with config {semgrep_config}...")
+
     subprocess.run([
         'semgrep', '--config', semgrep_config, '--json', '--quiet', 
         '-o', semgrep_output_file, target_app
     ], check=True, stdout=subprocess.DEVNULL)
+    
     logging.info(f"Semgrep results saved to {semgrep_output_file}.")
+
 
 def print_banner():
     yellow = "\033[93m"
@@ -237,7 +246,7 @@ Made by https://linkedin.com/in/mllamazares
 """)
 
 def get_input_params():
-    parser = argparse.ArgumentParser(description='Match Semgrep results with coverage data. You can either provide semgrep and coverage JSON files directly or specify a pytest folder and target app to generate them (see Options below).')
+    parser = argparse.ArgumentParser(description='Correlates Semgrep findings with Python test code coverage. You can either provide semgrep and coverage JSON files directly or specify a pytest folder and target app to generate them (see Options below).')
 
     common_group = parser.add_argument_group('Common arguments')
     common_group.add_argument('-er', '--exclude_rule_regex', default='', help='Exclude semgrep rules which name matches the provided regex')

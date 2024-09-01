@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='vulncov',
-    version='0.1.0',
+    version='0.0.1',
     packages=find_packages(),
     entry_points={
         'console_scripts': [
@@ -10,10 +10,6 @@ setup(
         ],
     },
     install_requires=[
-        "pytest==8.3.2",
-        "pytest-cov==5.0.0",
-        "coverage==7.6.1",
-        "semgrep==1.85.0",
     ],
     description='A tool to match semgrep results with coverage data.',
     author='Miguel Llamazares',

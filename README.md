@@ -1,19 +1,20 @@
 # 🧪 vulncov
 
-`vulncov` links [Semgrep](https://semgrep.dev/) scan findings with test code [coverage](https://coverage.readthedocs.io/en/latest/index.html) data. This helps identify which vulnerabilities are covered by tests, making it easier to prioritize issues and reduce false positives.
+`vulncov` correlates [Semgrep](https://semgrep.dev/) scan findings with Python [test code coverage](https://coverage.readthedocs.io/en/latest/index.html) to help identify which parts of the code with potential vulnerabilities have been executed by unit tests. This makes it easier to prioritize issues and reduce false positives.
 
 ![vulncov screenshot](screenshot.png)
 
 ## Rationale
 When analyzing SAST tool output, some findings might not be reachable from external sources, meaning they pose less risk. Conversely, starting with data flow from sources might not catch potential vulnerabilities. 
 
-`vulncov` solves this by correlating SAST findings with code coverage data from unit tests. This helps prioritize reachable vulnerabilities and provides clues on how to reach the affected code, as you can identify the test cases associated with specific findings.
+`vulncov` solves this by correlating SAST findings with code coverage data from unit tests. This helps prioritize reachable vulnerabilities and provides insignts on how to reach the affected code, as you can identify the test cases associated with specific findings.
 
-I highly recommend checking out the [Demo section](#demo) for an intuitive example.
+Check out the [Demo section](#demo) for an intuitive example.
 
-**Disclaimer**:
-- This doesn’t mean we should ignore the rest of the SAST output—it's just a way to prioritize.
+#### ⚠️ Disclaimer
+- This doesn’t mean we should ignore the rest of the SAST output — it's just a way to prioritize.
 - It requires good unit tests using [pytest](https://pytest.org/). The higher the coverage, the more reliable the results.
+- At this time, this project is just a proof of concept — use it at your own risk!
 
 ## Features
 - Shows which test cases reach each SAST finding, making it easier to analyze and test the scenario. 🎯
@@ -21,16 +22,22 @@ I highly recommend checking out the [Demo section](#demo) for an intuitive examp
 - Generates JSON output with key Semgrep fields, including the `fingerprint`, making it easier to compare and correlate findings. 🔗
 - Allows excluding Semgrep rules using regex. 🚫
 - Lets you run Semgrep and coverage scans or use existing results if you’ve already run the tools. 🃏
-- Dead-simple [installation](#installation). 🚀
 - Currently supports Python (more languages [coming soon](#TODO)!). 🐍
 
 ## Installation
 
-To install `vulncov`, just run the following command with [pipx](https://github.com/pypa/pipx):
-
-```shell
-pipx install git+https://github.com/mllamazares/vulncov.git
-```
+1. Clone this repo:
+    ```shell
+    git clone https://github.com/mllamazares/vulncov.git && cd vulncov
+    ```
+2. Create a virtual environment:
+    ```shell
+   python -m venv venv && source venv/bin/activate
+    ```
+3. Install `vulncov`and its dependencies:
+    ```shell
+    pip install -e . -r requirements.txt
+    ```
 
 ## Usage
 
@@ -41,7 +48,7 @@ vulncov -h
 ```
 usage: vulncov.py [-h] [-er EXCLUDE_RULE_REGEX] [-o VULNCOV_OUTPUT_FILE] [-q] [-p PYTEST_FOLDER] [-t TARGET_APP] [-os SEMGREP_OUTPUT_FILE] [-oc COVERAGE_OUTPUT_FILE] [-s SEMGREP_JSON_FILE] [-c COVERAGE_JSON_FILE]
 
-Match Semgrep results with coverage data. You can either provide Semgrep and coverage JSON files directly or specify a pytest folder and target app to generate them (see Scenarios below).
+Correlates Semgrep findings with Python test code coverage. You can either provide Semgrep and coverage JSON files directly or specify a pytest folder and target app to generate them (see Scenarios below).
 
 options:
   -h, --help            show this help message and exit
@@ -113,7 +120,7 @@ vulncov -s semgrep_vulns.json -c coverage.json
 
 Note that you need to run coverage with the [dynamic context](https://coverage.readthedocs.io/en/latest/contexts.html#dynamic-contexts) enabled. To do this, create a `coverage.cfg` file with the following content:
 
-```toml
+```
 [run]
 dynamic_context = test_function
 ```
@@ -177,7 +184,16 @@ def ping():
 
 As you can see, the `ping` function has its route commented out, so it’s inaccessible externally. It’s also referenced in the login function, but note that it's called only if an impossible condition (`if 1==2`) is met, making it unreachable.
 
-Now, let’s see how the process looks when running a standalone SAST versus using `vulncov`.
+
+
+Now, let’s see how the process looks when running a [standalone SAST](#using-a-standalone-sast) versus [using `vulncov`](#using-vulncov).
+
+#### Demo App Setup
+
+After completing the steps in the [Installation](#installation) section, install the additional dependencies for the demo app by running this command in the virtual environment:
+```shell
+pip install -r demo/requirements.txt
+```
 
 ### Using a standalone SAST
 
@@ -213,9 +229,7 @@ vulncov -p demo/tests -t demo/src/ -e django -o /tmp/vulncov.json
 
 Explanation:
 - `-p demo/tests`: the pytest folder where the coverage will be extracted.
-- `
-
--t demo/src/`: the folder containing the target application’s source code.
+- `-t demo/src/`: the folder containing the target application’s source code.
 - `-e django`: regex to exclude rules from the output. Since we used `p/python`, it includes different frameworks like Flask and Django, as well as generic rules (`lang`). This parameter helps omit those from the output.
 
 Here’s the output of the execution:
@@ -324,11 +338,10 @@ Additionally, the output includes information on which test cases can trigger ea
 
 ## Output JSON structure
 
-### Output JSON Structure Description
 
 Below is a detailed breakdown of the `vulncov` JSON structure:
 
-#### `summary`
+### `summary`
 The `summary` object provides an overview of the entire analysis:
 
 - **semgrep_input_file**: The name of the JSON file with Semgrep scan results (`semgrep_vulns.json`).
@@ -338,7 +351,7 @@ The `summary` object provides an overview of the entire analysis:
 - **number_vulnerabilities_input**: The total number of vulnerabilities detected in the Semgrep input file.
 - **number_vulnerabilities_matched**: The number of vulnerabilities from Semgrep that were matched with executed lines in the test coverage data.
 
-#### `matched_results`
+### `matched_results`
 The `matched_results` array contains detailed information about each detected vulnerability that was matched with executed test cases. Each object in this array includes the following:
 
 - **semgrep**: An object detailing a specific vulnerability identified by Semgrep.
@@ -360,5 +373,6 @@ The `matched_results` array contains detailed information about each detected vu
 ## TODO
 - [ ] Support other languages, not just Python. 🌍
 - [ ] Clean and refactor code. 🧹
+- [ ] Simplify the installation process.
 
 Contributions are welcome! Feel free to submit a PR. 🙌
