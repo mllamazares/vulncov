@@ -1,5 +1,11 @@
 # 🧪 vulncov
 
+![](https://img.shields.io/badge/license-MIT-green)
+[![](https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mllamazares/)
+[![Watch on GitHub](https://img.shields.io/github/watchers/mllamazares/vulncov.svg?style=social)](https://github.com/mllamazares/vulncov/watchers)
+[![Star on GitHub](https://img.shields.io/github/stars/mllamazares/vulncov.svg?style=social)](https://github.com/mllamazares/vulncov/stargazers)
+[![Tweet](https://img.shields.io/twitter/url/https/github.com/mllamazares/vulncov.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20vulncov%21%20https%3A%2F%2Fgithub.com%2Fmllamazares%2Fvulncov)
+
 `vulncov` correlates [Semgrep](https://semgrep.dev/) scan findings with Python [test code coverage](https://coverage.readthedocs.io/en/latest/index.html) to help identify which parts of the code with potential vulnerabilities have been executed by unit tests. This makes it easier to prioritize issues and reduce false positives.
 
 ![vulncov screenshot](screenshot.png)
