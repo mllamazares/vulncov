@@ -6,14 +6,14 @@
 [![Star on GitHub](https://img.shields.io/github/stars/mllamazares/vulncov.svg?style=social)](https://github.com/mllamazares/vulncov/stargazers)
 [![Tweet](https://img.shields.io/twitter/url/https/github.com/mllamazares/vulncov.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20vulncov%21%20https%3A%2F%2Fgithub.com%2Fmllamazares%2Fvulncov)
 
-`vulncov` correlates [Semgrep](https://semgrep.dev/) scan findings with Python [test code coverage](https://coverage.readthedocs.io/en/latest/index.html) to help identify which parts of the code with potential vulnerabilities have been executed by unit tests. This makes it easier to prioritize issues and reduce false positives.
+`vulncov` is a tool that correlates [Semgrep](https://semgrep.dev/) scans with Python [test code coverage](https://coverage.readthedocs.io/en/latest/index.html) to help identify which potentially vulnerable code has been executed by the unit tests. This helps prioritize SAST findings and reduce false positives.
 
 ![vulncov screenshot](screenshot.png)
 
 ## Rationale
-When analyzing SAST tool output, some findings might not be reachable from external sources, meaning they pose less risk. Conversely, starting with data flow from sources might not catch potential vulnerabilities. 
+When analyzing SAST tool output, some findings might be located in parts of the code that are not reachable from the input sources, meaning they are [dead code](https://en.wikipedia.org/wiki/Dead_code) and ultimately pose less risk. At the same time, starting the data flow analysis from the input sources might not connect with those potential findings.
 
-`vulncov` solves this by correlating SAST findings with code coverage data from unit tests. This helps prioritize reachable vulnerabilities and provides insights on how to reach the affected code, as you can identify the test cases associated with specific findings.
+`vulncov` solves this challenge by correlating SAST findings with code coverage data from unit tests. This helps prioritize reachable vulnerabilities and provides insights on how to reach the affected code, as you can identify the test cases associated with specific findings.
 
 Check out the [Demo section](#demo) for an intuitive example.
 
