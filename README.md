@@ -197,6 +197,8 @@ def ping():
 
 As you can see, the `ping` function has its route commented out, so it’s inaccessible externally. It’s also referenced in the login function, but note that it's called only if an impossible condition (`if 1==2`) is met, making it unreachable.
 
+Additionally, there's a folder called [demo/tests](.demo/tests) containing a file with two pytest unit tests. Each test verifies that the credential verification workflow works as expected.
+
 Now, let’s see how the process looks when running a [standalone SAST](#using-a-standalone-sast) versus [using `vulncov`](#using-vulncov).
 
 #### Demo App Setup
@@ -207,7 +209,7 @@ After completing the steps in the [Installation](#installation) section, install
 pip install -r demo/requirements.txt
 ```
 
-### Using a standalone SAST
+### Using a standalone SAST 🥱
 
 If we run `semgrep` like this:
 ```shell
@@ -218,6 +220,9 @@ And then filter the relevant lines from the JSON file:
 
 ```shell
 cat /tmp/semgrep_results.json | jq | grep check_id
+```
+
+```json
       "check_id": "python.django.security.injection.sql.sql-injection-using-db-cursor-execute.sql-injection-db-cursor-execute",
       "check_id": "python.django.security.injection.sql.sql-injection-using-db-cursor-execute.sql-injection-db-cursor-execute",
       "check_id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
@@ -229,7 +234,7 @@ cat /tmp/semgrep_results.json | jq | grep check_id
       "check_id": "python.flask.security.injection.raw-html-concat.raw-html-format",
 ```
 
-The main issue here is that it's flagging functions like `dangerous-system-call` that are dead code, as explained in the [Demo section](#demo).
+The main issue here is that it's flagging functions like `dangerous-system-call` which is in `ping_referer()` function (dead code), as explained in the [Demo section](#demo).
 
 ### Using `vulncov` 🪄
 
@@ -244,38 +249,12 @@ Explanation:
 - `-t demo/src/`: the folder containing the target application’s source code.
 - `-e django`: regex to exclude rules from the output. Since we used `p/python`, it includes different frameworks like Flask and Django, as well as generic rules (`lang`). This parameter helps omit those from the output.
 
-Here’s the output of the execution:
-```
-            __
- _  ____ __/ /__  _______ _  __
-| |/ / // / / _ \/ __/ _ \ |/ /
-|___/\_,_/_/_//_/\__/\___/___/
-
-                        v0.0.1
-
-Made by https://linkedin.com/in/mllamazares
-
----
-
-2024-09-01 04:11:52 - INFO - Executing coverage...
-2024-09-01 04:11:53 - INFO - Coverage report generated at coverage.json.
-2024-09-01 04:11:53 - INFO - Running Semgrep with config p/python...
-2024-09-01 04:12:06 - INFO - Semgrep results saved to semgrep_vulns.json.
-2024-09-01 04:12:06 - INFO - Initializing VulnCov with Semgrep and coverage data.
-2024-09-01 04:12:06 - INFO - Loading JSON data from semgrep_vulns.json.
-2024-09-01 04:12:06 - INFO - Loading JSON data from coverage.json.
-2024-09-01 04:12:06 - INFO - Validating coverage structure.
-2024-09-01 04:12:06 - INFO - Excluding vulnerabilities with Semgrep rules matching the regex: django
-2024-09-01 04:12:06 - INFO - Initial vulnerabilities: 9
-2024-09-01 04:12:06 - INFO - Matching Semgrep findings with coverage data...
-2024-09-01 04:12:06 - INFO - Matched vulnerabilities: 3
-2024-09-01 04:12:06 - INFO - Vulnerability coverage results saved to /tmp/vulncov.json.
-```
-
-We can see it filtered the 9 initial Semgrep findings down to 3!
+When we inspect the output JSON, it filtered the initial 9 Semgrep findings down to just 3! 🎉
 
 ```shell
 cat /tmp/vulncov.json | jq | grep check_id
+```
+```json
         "check_id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
         "check_id": "python.flask.db.generic-sql-flask.generic-sql-flask",
         "check_id": "python.flask.security.audit.directly-returned-format-string.directly-returned-format-string",
@@ -283,70 +262,63 @@ cat /tmp/vulncov.json | jq | grep check_id
 
 It omitted vulnerabilities from dead code, like `dangerous-system-call`, and removed redundant findings, such as one of the `directly-returned-format-string` checks and the Django references.
 
-Additionally, the output includes information on which test cases can trigger each vulnerability under `test_cases`. Here’s an example of one:
+The output includes information on which test cases can trigger each vulnerability. Let's review an example:
 
 ```json
-    {
-      "semgrep": {
-        "fingerprint": "b4eef3e24a2d73ef7d175f282bcd378d246402e39579f7a1ce45444e6c930fbae8d84a7a0f40f61df0fef257687103f732e3368fd0218ebf41d9058a3f827396_0",
-        "check_id": "python.flask.security.injection.tainted-sql-string.tainted-sql-string",
-        "rule_category": "security",
-        "vulnerability_class": [
-          "Improper Validation"
-        ],
-        "impact": "MEDIUM",
-        "message": "Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.",
-        "lines": "    query = f\"SELECT * FROM users WHERE username='{username}' AND password='{password}'\"",
-        "vuln_lines": [
-          31
-        ]
-      },
-      "test_cases": [
-        {
-          "name": "login_test.test_login_success",
-          "executed_lines": [
-            11,
-            12,
-            24,
-            25,
-            27,
-            28,
-            31,
-            32,
-            34,
-            35,
-            37,
-            39
-          ],
-          "matched_lines": [
-            31
-          ],
-          "coverage_match_percentage": 100.0
-        },
-        {
-          "name": "login_test.test_login_failure",
-          "executed_lines": [
-            11,
-            12,
-            24,
-            25,
-            27,
-            28,
-            31,
-            32,
-            34,
-            35,
-            37,
-            41
-          ],
-          "matched_lines": [
-            31
-          ],
-          "coverage_match_percentage": 100.0
+{
+            "semgrep":{
+                "fingerprint":"babc5e12b8a3765aa6b292fbc07947825755a8ef203a0ef83775983593273e5596e3ce2f25dde92ecdaf40847a576c05508c6cb50f0fd37c61cfad9c5e8f2146_0",
+                "check_id":"python.flask.security.audit.directly-returned-format-string.directly-returned-format-string",
+                "rule_category":"security",
+                "vulnerability_class":[
+                    "Cross-Site-Scripting (XSS)"
+                ],
+                "impact":"MEDIUM",
+                "message":"Detected Flask route directly returning a formatted string. This is subject to cross-site scripting if user input can reach the string. Consider using the template engine instead and rendering pages with 'render_template()'.",
+                "lines":"        return f\"Welcome {username}!\"",
+                "vuln_lines":[
+                    39
+                ]
+            },
+            "test_cases":[
+                {
+                    "name":"login_test.test_login_success",
+                    "executed_lines":[
+                        11,
+                        12,
+                        24,
+                        25,
+                        27,
+                        28,
+                        31,
+                        32,
+                        34,
+                        35,
+                        37,
+                        39
+                    ],
+                    "matched_lines":[
+                        39
+                    ],
+                    "coverage_match_percentage":100.0
+                }
+            ]
         }
-      ]
-    },
 ```
+
+Check out the detail of the [Output JSON structure](#output-json-structure).
+
+As you can see, this third item has only one test case associated with it, `login_test.test_login_success`, while the others also have `login_test.test_login_failure`. This is because [line 39](./demo/src/dummyapp.py#L39) contains a potential XSS vulnerability, triggered only when a login is successful:
+
+```python
+    if user:
+        # Vulnerable to XSS
+        return f"Welcome {username}!"
+    else:
+        return "Invalid credentials!", 403
+```
+
+This way, `vulncov` also provides a clue on how to trigger each Semgrep finding, as we have the corresponding test case. 🤓
 
 ## Output JSON structure
 
