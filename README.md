@@ -309,7 +309,7 @@ The output includes information on which test cases can trigger each vulnerabili
 
 Check out the detail of the [Output JSON structure](#output-json-structure).
 
-As you can see, this third item has only one test case associated with it, `login_test.test_login_success`, while the others also have `login_test.test_login_failure`. This is because [line 39](./demo/src/dummyapp.py#L43) contains a potential XSS vulnerability, triggered only when a login is successful:
+As you can see, this third item has only one test case associated with it, `login_test.test_login_success`, while the others also have `login_test.test_login_failure`. This is because [line 43](./demo/src/dummyapp.py#L43) contains a potential XSS vulnerability, triggered only when a login is successful:
 
 ```python
     if user:
