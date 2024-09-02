@@ -23,7 +23,11 @@ def init_db():
 def login():
     username = request.args.get('username')
     password = request.args.get('password')
-    
+
+    # This will NEVER be triggered
+    if 1==2:
+        ping()
+
     conn = get_db_connection()
     cursor = conn.cursor()
     

@@ -1,9 +1,9 @@
 {
     "summary":{
-        "semgrep_input_file":"semgrep_vulns.json",
-        "coverage_input_file":"coverage.json",
-        "uid":"b7e987e6-53eb-47ec-87af-8c8fbe6b3905",
-        "timestamp":"2024-09-01 16:58:32",
+        "semgrep_input_file":"demo/vulncov/semgrep_vulns.json",
+        "coverage_input_file":"demo/vulncov/coverage.json",
+        "uid":"e7413458-da82-44ef-8b09-5b6f99312698",
+        "timestamp":"2024-09-02 14:41:57",
         "number_vulnerabilities_input":9,
         "number_vulnerabilities_matched":3
     },
@@ -20,31 +20,10 @@
                 "message":"Detected user input used to manually construct a SQL string. This is usually bad practice because manual construction could accidentally result in a SQL injection. An attacker could use a SQL injection to steal or modify contents of the database. Instead, use a parameterized query which is available by default in most database engines. Alternatively, consider using an object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.",
                 "lines":"    query = f\"SELECT * FROM users WHERE username='{username}' AND password='{password}'\"",
                 "vuln_lines":[
-                    31
+                    35
                 ]
             },
             "test_cases":[
-                {
-                    "name":"login_test.test_login_success",
-                    "executed_lines":[
-                        11,
-                        12,
-                        24,
-                        25,
-                        27,
-                        28,
-                        31,
-                        32,
-                        34,
-                        35,
-                        37,
-                        39
-                    ],
-                    "matched_lines":[
-                        31
-                    ],
-                    "coverage_match_percentage":100.0
-                },
                 {
                     "name":"login_test.test_login_failure",
                     "executed_lines":[
@@ -52,17 +31,40 @@
                         12,
                         24,
                         25,
-                        27,
                         28,
                         31,
                         32,
-                        34,
                         35,
-                        37,
-                        41
+                        36,
+                        38,
+                        39,
+                        41,
+                        45
                     ],
                     "matched_lines":[
-                        31
+                        35
+                    ],
+                    "coverage_match_percentage":100.0
+                },
+                {
+                    "name":"login_test.test_login_success",
+                    "executed_lines":[
+                        11,
+                        12,
+                        24,
+                        25,
+                        28,
+                        31,
+                        32,
+                        35,
+                        36,
+                        38,
+                        39,
+                        41,
+                        43
+                    ],
+                    "matched_lines":[
+                        35
                     ],
                     "coverage_match_percentage":100.0
                 }
@@ -80,31 +82,10 @@
                 "message":"Untrusted input might be used to build a database query, which can lead to a SQL injection vulnerability. An attacker can execute malicious SQL statements and gain unauthorized access to sensitive data, modify, delete data, or execute arbitrary system commands. The driver API has the ability to bind parameters to the query in a safe way. Make sure not to dynamically create SQL queries from user-influenced inputs. If you cannot avoid this, either escape the data properly or create an allowlist to check the value.",
                 "lines":"    cursor.execute(query)",
                 "vuln_lines":[
-                    32
+                    36
                 ]
             },
             "test_cases":[
-                {
-                    "name":"login_test.test_login_success",
-                    "executed_lines":[
-                        11,
-                        12,
-                        24,
-                        25,
-                        27,
-                        28,
-                        31,
-                        32,
-                        34,
-                        35,
-                        37,
-                        39
-                    ],
-                    "matched_lines":[
-                        32
-                    ],
-                    "coverage_match_percentage":100.0
-                },
                 {
                     "name":"login_test.test_login_failure",
                     "executed_lines":[
@@ -112,17 +93,40 @@
                         12,
                         24,
                         25,
-                        27,
                         28,
                         31,
                         32,
-                        34,
                         35,
-                        37,
-                        41
+                        36,
+                        38,
+                        39,
+                        41,
+                        45
                     ],
                     "matched_lines":[
-                        32
+                        36
+                    ],
+                    "coverage_match_percentage":100.0
+                },
+                {
+                    "name":"login_test.test_login_success",
+                    "executed_lines":[
+                        11,
+                        12,
+                        24,
+                        25,
+                        28,
+                        31,
+                        32,
+                        35,
+                        36,
+                        38,
+                        39,
+                        41,
+                        43
+                    ],
+                    "matched_lines":[
+                        36
                     ],
                     "coverage_match_percentage":100.0
                 }
@@ -140,7 +144,7 @@
                 "message":"Detected Flask route directly returning a formatted string. This is subject to cross-site scripting if user input can reach the string. Consider using the template engine instead and rendering pages with 'render_template()'.",
                 "lines":"        return f\"Welcome {username}!\"",
                 "vuln_lines":[
-                    39
+                    43
                 ]
             },
             "test_cases":[
@@ -151,17 +155,18 @@
                         12,
                         24,
                         25,
-                        27,
                         28,
                         31,
                         32,
-                        34,
                         35,
-                        37,
-                        39
+                        36,
+                        38,
+                        39,
+                        41,
+                        43
                     ],
                     "matched_lines":[
-                        39
+                        43
                     ],
                     "coverage_match_percentage":100.0
                 }

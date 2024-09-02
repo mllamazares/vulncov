@@ -109,7 +109,7 @@ vulncov -p demo/tests -t demo/
 
 #### Installing target app dependencies for Coverage
 
-To run `vulncov` in this mode, be aware that in addition to the initial dependencies, the target app might require additional ones, such as Flask. You can install these by running the following command in the virtual environment:
+To run `vulncov` in this mode, be aware that in addition to the initial dependencies, the target app might require additional ones, such as Flask (otherwise, `coverage` will fail). You can install these by running the following command in the virtual environment:
 ```shell
 pip install -r demo/requirements.txt
 ```
@@ -195,7 +195,7 @@ def ping():
     return f"<pre>{output}</pre>"
 ```
 
-As you can see, the `ping` function has its route commented out, so it’s inaccessible externally. It’s also referenced in the login function, but note that it's called only if an impossible condition (`if 1==2`) is met, making it unreachable.
+As you can see, the `ping()` function has its route commented out, so it’s inaccessible externally. It’s also referenced in the login function, but note that it's called only if an impossible condition (`if 1==2`) is met, making it still unreachable.
 
 Additionally, there's a folder called [demo/tests](.demo/tests) containing a file with two pytest unit tests. Each test verifies that the credential verification workflow works as expected.
 
@@ -234,7 +234,7 @@ cat /tmp/semgrep_results.json | jq | grep check_id
       "check_id": "python.flask.security.injection.raw-html-concat.raw-html-format",
 ```
 
-The main issue here is that it's flagging functions like `dangerous-system-call` which is in `ping_referer()` function (dead code), as explained in the [Demo section](#demo).
+The main issue here is that it's flagging functions like `dangerous-system-call` which is in `ping()` function (dead code), as explained in the [Demo section](#demo).
 
 ### Using `vulncov` 🪄
 
@@ -266,49 +266,50 @@ The output includes information on which test cases can trigger each vulnerabili
 
 ```json
 {
-            "semgrep":{
-                "fingerprint":"babc5e12b8a3765aa6b292fbc07947825755a8ef203a0ef83775983593273e5596e3ce2f25dde92ecdaf40847a576c05508c6cb50f0fd37c61cfad9c5e8f2146_0",
-                "check_id":"python.flask.security.audit.directly-returned-format-string.directly-returned-format-string",
-                "rule_category":"security",
-                "vulnerability_class":[
-                    "Cross-Site-Scripting (XSS)"
-                ],
-                "impact":"MEDIUM",
-                "message":"Detected Flask route directly returning a formatted string. This is subject to cross-site scripting if user input can reach the string. Consider using the template engine instead and rendering pages with 'render_template()'.",
-                "lines":"        return f\"Welcome {username}!\"",
-                "vuln_lines":[
-                    39
-                ]
-            },
-            "test_cases":[
-                {
-                    "name":"login_test.test_login_success",
-                    "executed_lines":[
-                        11,
-                        12,
-                        24,
-                        25,
-                        27,
-                        28,
-                        31,
-                        32,
-                        34,
-                        35,
-                        37,
-                        39
-                    ],
-                    "matched_lines":[
-                        39
-                    ],
-                    "coverage_match_percentage":100.0
-                }
-            ]
-        }
+  "semgrep": {
+    "fingerprint": "babc5e12b8a3765aa6b292fbc07947825755a8ef203a0ef83775983593273e5596e3ce2f25dde92ecdaf40847a576c05508c6cb50f0fd37c61cfad9c5e8f2146_0",
+    "check_id": "python.flask.security.audit.directly-returned-format-string.directly-returned-format-string",
+    "rule_category": "security",
+    "vulnerability_class": [
+      "Cross-Site-Scripting (XSS)"
+    ],
+    "impact": "MEDIUM",
+    "message": "Detected Flask route directly returning a formatted string. This is subject to cross-site scripting if user input can reach the string. Consider using the template engine instead and rendering pages with 'render_template()'.",
+    "lines": "        return f\"Welcome {username}!\"",
+    "vuln_lines": [
+      43
+    ]
+  },
+  "test_cases": [
+    {
+      "name": "login_test.test_login_success",
+      "executed_lines": [
+        11,
+        12,
+        24,
+        25,
+        28,
+        31,
+        32,
+        35,
+        36,
+        38,
+        39,
+        41,
+        43
+      ],
+      "matched_lines": [
+        43
+      ],
+      "coverage_match_percentage": 100.0
+    }
+  ]
+}
 ```
 
 Check out the detail of the [Output JSON structure](#output-json-structure).
 
-As you can see, this third item has only one test case associated with it, `login_test.test_login_success`, while the others also have `login_test.test_login_failure`. This is because [line 39](./demo/src/dummyapp.py#L39) contains a potential XSS vulnerability, triggered only when a login is successful:
+As you can see, this third item has only one test case associated with it, `login_test.test_login_success`, while the others also have `login_test.test_login_failure`. This is because [line 39](./demo/src/dummyapp.py#L43) contains a potential XSS vulnerability, triggered only when a login is successful:
 
 ```python
     if user:
