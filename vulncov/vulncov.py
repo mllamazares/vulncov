@@ -140,7 +140,7 @@ class VulnCov:
             logging.info("Excluding vulnerabilities which semgrep rule matches the regex: {exclude_rule}".format(exclude_rule=exclude_rule))
 
         logging.info("Input vulnerabilities: {vinput}".format(vinput=self.headers['number_vulnerabilities_input']))
-        logging.info("Matching semgrep vulns with coverage execution...")
+        logging.info("Correlating semgrep findings with test code coverage...")
 
         matched_results = []
 
@@ -176,7 +176,7 @@ class VulnCov:
 
         self.headers['number_vulnerabilities_matched'] = len(matched_results)
 
-        logging.info("Matched vulnerabilities: {vinput}".format(vinput=self.headers['number_vulnerabilities_matched']))
+        logging.info("Final vulnerabilities: {vinput}".format(vinput=self.headers['number_vulnerabilities_matched']))
 
         final_output = {
             'summary': self.headers,
