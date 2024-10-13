@@ -4,7 +4,7 @@ import os
 import sys
 sys.path.append(sys.path[0] + "/../src")
 
-from dummyapp import app, init_db, DATABASE  # Replace 'your_flask_app' with the actual name of your Flask app module
+from dummyapp import app, init_db, DATABASE  
 
 @pytest.fixture(scope='module')
 def client():

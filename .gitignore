@@ -4,3 +4,4 @@ build/*
 *egg-info
 .pytest_cache/*
 __pycache__
+.vulncov
