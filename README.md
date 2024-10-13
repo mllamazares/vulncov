@@ -131,6 +131,12 @@ Curious about how to use VulnCov? Check out the [Wiki](https://github.com/mllama
 - [SAST vs. VulnCov Demo](https://github.com/mllamazares/vulncov/wiki/2.-SAST-vs-Vulncov-demo)
 - [Output JSON Structure](https://github.com/mllamazares/vulncov/wiki/3.-Output-JSON-Structure)
 
+
+## Acknowledgements
+
+- Seth Law & Ken Johnson from [AbsoluteAppSec](https://github.com/absoluteappsec): the LLM implementation was heavily influenced by [their handouts repo](https://github.com/absoluteappsec/handouts/tree/master/GenAI).
+- Semgrep for creating such an awesome open-source SAST tool.
+
 ## TODO
 - [ ] Add support to other languages, not just Python. 🌍
 - [ ] Add unit tests. 🧹
