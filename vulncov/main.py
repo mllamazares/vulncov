@@ -45,10 +45,14 @@ def main():
         args.semgrep_output_file, args.coverage_output_file, args.exclude_rule_regex
     )
 
-    # Step 4: Use the LLM to suggest fixes, if an Ollama server URL is provided
-    if args.ollama_server:
+    # Step 4: Use the LLM to suggest fixes, if an LLM server URL is provided
+    if args.llm_service:
         matched_results = suggest_vulnerability_fixes(
-            matched_results, args.target_app, args.ollama_server, args.ollama_model
+            matched_results=matched_results,
+            llm_service=args.llm_service,
+            model=args.llm_model,
+            api_key=args.llm_apikey,
+            base_url=args.llm_url
         )
 
     # Step 5: Save the matched results to a file

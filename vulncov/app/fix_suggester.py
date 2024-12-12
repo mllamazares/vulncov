@@ -4,14 +4,17 @@ import tqdm
 
 from ..domain.appsec_wizard import AppSecWizard
 
-def suggest_vulnerability_fixes(matched_results, repo_path, ollama_url, ollama_model):
+def suggest_vulnerability_fixes(matched_results, repo_path, llm_service,  model, api_key=None, base_url=None):
     """
     Suggests vulnerability fixes using the LLM (Large Language Model).
 
     Args:
         matched_results (dict): The results from matching Semgrep with coverage data.
         repo_path (str): Path to the repository where the code exists.
-        ollama_url (str): URL to the Ollama LLM server.
+        llm_service (str): LLM service provider (e.g., 'ollama', 'openai', 'anthropic').
+        model (str): The model name for the LLM.
+        api_key (str): API key for external LLM services (if required).
+        base_url (str): Base URL for self-hosted models (e.g., Ollama).
 
     Returns:
         dict: Updated results with LLM-suggested vulnerability fixes.
@@ -21,9 +24,8 @@ def suggest_vulnerability_fixes(matched_results, repo_path, ollama_url, ollama_m
     with open(template_path, 'r') as file:
         template_fix = file.read()
 
-    # Initialize AppSecWizard with repo path and LLM server URL
-    vuln_processor = AppSecWizard(repo_path, ollama_url, ollama_model)
-    chain = vuln_processor.create_chain(template_fix)
+    llm = AppSecWizard(service=llm_service, model=model, api_key=api_key, base_url=base_url)
+    chain = llm.create_chain(template_fix, retriever)
 
     # Iterate over matched vulnerabilities
     for vuln in tqdm.tqdm(matched_results['matched_results']):
